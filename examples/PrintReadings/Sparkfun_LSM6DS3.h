@@ -49,7 +49,8 @@ struct SensorSettings {
 	
   //FIFO control data
     uint16_t fifoThreshold;
-  
+    int16_t fifoSampleRate;
+    uint8_t fifoModeWord;
 };
 
 class Sparkfun_LSM6DS3 {
@@ -89,7 +90,7 @@ class Sparkfun_LSM6DS3 {
     void fifoBegin( void );
     void fifoClear( void );
     int16_t fifoRead( void );
-    uint8_t fifoGetStatus( void );
+    uint16_t fifoGetStatus( void );
     void fifoEnd( void );
 
     //private:

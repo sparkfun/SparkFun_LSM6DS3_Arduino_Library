@@ -13,15 +13,15 @@ void setup( void ) {
   //Over-ride default settings if desired
   mySensor.settings.gyroEnabled = 1;  //Can be 0 or 1
   mySensor.settings.gyroRange = 2000;   //Max deg/s.  Can be: 125, 245, 500, 1000, 2000
-  mySensor.settings.gyroSampleRate = 416;   //Hz.  Can be: 13, 26, 52, 104, 208, 416, 833, 1666
+  mySensor.settings.gyroSampleRate = 104;   //Hz.  Can be: 13, 26, 52, 104, 208, 416, 833, 1666
   mySensor.settings.gyroBandWidth = 400;  //Hz.  Can be: 50, 100, 200, 400;
   mySensor.settings.gyroFifoEnabled = 1;  //Set to include gyro in FIFO
   mySensor.settings.gyroFifoDecimation = 1;  //set 1 for on /1
 
   mySensor.settings.accelEnabled = 1;
   mySensor.settings.accelRange = 16;      //Max G force readable.  Can be: 2, 4, 8, 16
-  mySensor.settings.accelSampleRate = 416;  //Hz.  Can be: 13, 26, 52, 104, 208, 416, 833, 1666, 3332, 6664, 13330
-  mySensor.settings.accelBandWidth = 100;  //Hz.  Can be: 50, 100, 200, 400;
+  mySensor.settings.accelSampleRate = 104;  //Hz.  Can be: 13, 26, 52, 104, 208, 416, 833, 1666, 3332, 6664, 13330
+  mySensor.settings.accelBandWidth = 50;  //Hz.  Can be: 50, 100, 200, 400;
   mySensor.settings.accelFifoEnabled = 1;  //Set to include accelerometer in the FIFO
   mySensor.settings.accelFifoDecimation = 1;  //set 1 for on /1
   mySensor.settings.tempEnabled = 1;
@@ -37,20 +37,33 @@ void setup( void ) {
   //Non-basic mode settings
   mySensor.settings.commMode = 1;
 
-  //FIFO control data
-  mySensor.settings.fifoThreshold = 3000;  //Can be 0 to 4096 (16 bit bytes)
+  //FIFO control settings
+  mySensor.settings.fifoThreshold = 100;  //Can be 0 to 4096 (16 bit bytes)
+  mySensor.settings.fifoSampleRate = 50;  //Hz.  Can be: 10, 25, 50, 100, 200, 400, 800, 1600, 3300, 6600
+  mySensor.settings.fifoModeWord = 6;  //FIFO mode.
+  //FIFO mode.  Can be:
+  //  0 (Bypass mode, FIFO off)
+  //  1 (Stop when full)
+  //  3 (Continuous during trigger)
+  //  4 (Bypass until trigger)
+  //  6 (Continous mode)
   
   uint8_t c = mySensor.begin();  //Can be called again to load new settings
   mySensor.fifoBegin();
   
   Serial.print("begin() ran.  Returns WHO_AM_I of: 0x");
   Serial.println(c, HEX);
-
+  
+  Serial.print("Clearing out the FIFO...");
+  mySensor.fifoClear();
+  Serial.print("Done!\n");
+  
 }
 
 void loop() {
   float temp;  //This is to hold read data
   int16_t tempRaw;
+  uint16_t tempUnsigned;
   
 //  Serial.print("\nIndividual reads");
 //  Serial.print("\n\n");  
@@ -61,9 +74,44 @@ void loop() {
 //  Serial.println(temp, 4);
 //  temp = mySensor.readAccel(Z_DIR);
 //  Serial.println(temp, 4);
+  while( ( mySensor.fifoGetStatus() & 0x8000 ) == 0 ) {};  //Wait for watermark
 
+  while( ( mySensor.fifoGetStatus() & 0x1000 ) == 0 ) {
   tempRaw = mySensor.fifoRead();
-  Serial.println(tempRaw);
+  Serial.print(tempRaw);
+  Serial.print(",");
+  tempRaw = mySensor.fifoRead();
+  Serial.print(tempRaw);
+  Serial.print(",");
+  tempRaw = mySensor.fifoRead();
+  Serial.print(tempRaw);
+  Serial.print(",");
+  tempRaw = mySensor.fifoRead();
+  float tempAccel = (float)(tempRaw) * 0.061 * (mySensor.settings.accelRange >> 1) / 1000;
+  if( tempAccel < 0.01 ) {
+    tempAccel = 0.01;
+  }
+  Serial.print(tempAccel);
+  Serial.print(",");
+  tempRaw = mySensor.fifoRead();
+  tempAccel = (float)(tempRaw) * 0.061 * (mySensor.settings.accelRange >> 1) / 1000;
+  if( tempAccel < 0.01 ) {
+    tempAccel = 0.01;
+  }
+  Serial.print(tempAccel);
+  Serial.print(",");
+  tempRaw = mySensor.fifoRead();
+  tempAccel = (float)(tempRaw) * 0.061 * (mySensor.settings.accelRange >> 1) / 1000;
+  if( tempAccel < 0.01 ) {
+    tempAccel = 0.01;
+  }
+  Serial.print(tempAccel);
+  Serial.print("\n");
+//  tempUnsigned = mySensor.fifoGetStatus();
+//  Serial.print("Fifo Status 1 and 2 (16 bits): 0x");
+//  Serial.println(tempUnsigned, HEX);
+  }
+  
 
 //  Serial.println("\nAccelerometer data (Raw)");
 //  tempRaw = mySensor.readAccelRaw(X_DIR);  //Raw
