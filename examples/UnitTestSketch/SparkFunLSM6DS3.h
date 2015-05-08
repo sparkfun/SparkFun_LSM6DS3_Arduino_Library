@@ -2,10 +2,15 @@
 #ifndef __EXAMPLEIMU_H__
 #define __EXAMPLEIMU_H__
 
+#include "SparkFunIMU.h"
 #include "stdint.h"
 
 #define I2C_MODE 0
 #define SPI_MODE 1
+
+#define RETRY_LIMIT 100 //Number of times to check for new data before giving up
+
+#define WHO_AM_I_CORRECT_RESPONSE 0x69
 
 //Class SensorSettings.  These hold the values that get written
 //to the sensor during the begin method
@@ -16,39 +21,32 @@ struct SensorSettings {
     uint16_t gyroRange;
     uint16_t gyroSampleRate;
     uint16_t gyroBandWidth;
-
-    uint8_t gyroFifoEnabled;
-    uint8_t gyroFifoDecimation;
-
-	
   //Accelerometer settings
     uint8_t accelEnabled;
-	
     uint16_t accelRange;
     uint16_t accelSampleRate;
     uint16_t accelBandWidth;
-	
-    uint8_t accelFifoEnabled;
-    uint8_t accelFifoDecimation;
-	
   //Temperature settings
     uint8_t tempEnabled;
-	
   //Main Interface and mode settings
     uint8_t commInterface;
     uint8_t I2CAddress;
     uint8_t chipSelectPin;
-
   //Non-basic mode settings
     uint8_t commMode;
-	
   //FIFO control data
     uint16_t fifoThreshold;
     int16_t fifoSampleRate;
     uint8_t fifoModeWord;
+    uint8_t gyroFifoEnabled;
+    uint8_t gyroFifoDecimation;
+    uint8_t accelFifoEnabled;
+    uint8_t accelFifoDecimation;
+  //Settings status_t
+  	status_t status;
 };
 
-class LSM6DS3
+class LSM6DS3 : public SparkFunIMU
 {
   public:
     SensorSettings settings;
@@ -62,37 +60,28 @@ class LSM6DS3
 
     float celsiusTemp;
     float fahrenheitTemp;
-    
-  protected:
-    // These two funcs are only for demo
-    uint8_t readAccelWhoAmI() { return 0x41; }
-    uint8_t readMagWhoAmI()   { return 0x3E; }
-    // Anything?
+
   public:
     LSM6DS3( void );
     ~LSM6DS3() = default;
-    uint8_t begin(void);
+    status_t begin(void);
+	
     float readGyroX(void);
     float readGyroY(void);
     float readGyroZ(void);
     float readAccelX(void);
     float readAccelY(void);
     float readAccelZ(void);
-
     float readTempC(void);
     float readTempF(void);
 
-    void fifoBegin( void );
-    void fifoClear( void );
-    int16_t fifoRead( void );
-    uint16_t fifoGetStatus( void );
-    void fifoEnd( void );
-
+	status_t getStatus(void);
+	
     //private:
     void readRegisterRegion(uint8_t*, uint8_t, uint8_t );
     uint8_t readRegister(uint8_t);
     void writeRegister(uint8_t, uint8_t);
-
+    
 };
 
 
@@ -123,10 +112,6 @@ typedef union {
   u8_t u8bit[4];
 } Type1Axis32bit_U;
 
-typedef enum {
-  MEMS_SUCCESS				=		0x01,
-  MEMS_ERROR				=		0x00
-} status_t;
 
 
 /************** Device Register  *******************/

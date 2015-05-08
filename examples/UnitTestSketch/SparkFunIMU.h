@@ -13,6 +13,7 @@ typedef enum
   IMU_HW_ERROR,
   IMU_GENERIC_ERROR,
   IMU_OUT_OF_BOUNDS,
+  IMU_NOT_CONFIGURED
   //...
 } status_t;
 

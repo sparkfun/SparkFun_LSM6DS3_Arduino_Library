@@ -1,4 +1,5 @@
 #include "SparkFunLSM6DS3.h"
+#include "SparkFunIMU.h"
 #include "stdint.h"
 
 #include "Wire.h"
@@ -27,7 +28,7 @@ LSM6DS3::LSM6DS3( void )
   settings.tempEnabled = 1;
 
   //Select interface mode
-  settings.commInterface = SPI_MODE; //Can be I2C_MODE, SPI_MODE
+  settings.commInterface = I2C_MODE; //Can be I2C_MODE, SPI_MODE
   settings.commMode = 1;  //Can be modes 1, 2 or 3
   //Select address for I2C.  Does nothing for SPI
   settings.I2CAddress = 0x6B; //Ignored for SPI_MODE
@@ -51,16 +52,23 @@ LSM6DS3::LSM6DS3( void )
   zGyro = 0;
   celsiusTemp = 0;
   fahrenheitTemp = 0;
+  
+  //Status of the settings
+  settings.status = IMU_NOT_CONFIGURED;
 
 }
 
 
 // Public methods
-uint8_t LSM6DS3::begin()
+status_t LSM6DS3::begin()
 {
   //Check the settings structure values to determine how to setup the device
   uint8_t dataToWrite = 0;  //Temporary variable
-
+  status_t result;
+  
+  settings.status = IMU_NOT_CONFIGURED; //Write this when the configuration completes.
+  driverStatus = IMU_NOT_CONFIGURED;
+  
   switch (settings.commInterface) {
 
     case I2C_MODE:
@@ -231,8 +239,19 @@ uint8_t LSM6DS3::begin()
   if ( settings.tempEnabled == 1) {
   }
 
-  //Return WHO AM I reg
-  uint8_t result = readRegister(LSM6DS3_ACC_GYRO_WHO_AM_I_REG);
+  //Test for WHO_AM_I register
+  if( readRegister(LSM6DS3_ACC_GYRO_WHO_AM_I_REG) == WHO_AM_I_CORRECT_RESPONSE )
+  {
+	  result = IMU_SUCCESS;
+	  settings.status = IMU_SUCCESS;
+	  driverStatus = IMU_SUCCESS;
+  }
+  else
+  {
+	  result = IMU_NOT_CONFIGURED;
+	  settings.status = IMU_NOT_CONFIGURED;
+	  driverStatus = IMU_NOT_CONFIGURED;
+  }
 
   return result;
   
@@ -373,125 +392,6 @@ float LSM6DS3::readTempF( void ) {
 
 //****************************************************************************//
 //
-//  FIFO section
-//
-//****************************************************************************//
-void LSM6DS3::fifoBegin( void ) {
-  //CONFIGURE THE VARIOUS FIFO SETTINGS
-  //
-  //
-  //This section first builds a bunch of config words, then goes through
-  //and writes them all.
-
-  //Split and mask the threshold
-  uint8_t thresholdLByte = settings.fifoThreshold & 0x00FF;
-  uint8_t thresholdHByte = (settings.fifoThreshold & 0x0F00) >> 8;
-  //Pedo bits not configured (ctl2)
-
-  //CONFIGURE FIFO_CTRL3
-  uint8_t tempFIFO_CTRL3 = 0;
-  if (settings.gyroFifoEnabled == 1)
-  {
-    //Set up gyro stuff
-    //Build on FIFO_CTRL3
-    //Set decimation
-    tempFIFO_CTRL3 |= (settings.gyroFifoDecimation & 0x07) << 3;
-
-  }
-  if (settings.accelFifoEnabled == 1)
-  {
-    //Set up accelerometer stuff
-    //Build on FIFO_CTRL3
-    //Set decimation
-    tempFIFO_CTRL3 |= (settings.accelFifoDecimation & 0x07);
-  }
-
-  //CONFIGURE FIFO_CTRL4  (nothing for now-- sets data sets 3 and 4
-  uint8_t tempFIFO_CTRL4 = 0;
-
-
-  //CONFIGURE FIFO_CTRL5
-  uint8_t tempFIFO_CTRL5 = 0;
-  switch (settings.fifoSampleRate) {
-    default:  //set default case to 10Hz(slowest)
-    case 10:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_10Hz;
-      break;
-    case 25:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_25Hz;
-      break;
-    case 50:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_50Hz;
-      break;
-    case 100:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_100Hz;
-      break;
-    case 200:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_200Hz;
-      break;
-    case 400:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_400Hz;
-      break;
-    case 800:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_800Hz;
-      break;
-    case 1600:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_1600Hz;
-      break;
-    case 3300:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_3300Hz;
-      break;
-    case 6600:
-      tempFIFO_CTRL5 |= LSM6DS3_ACC_GYRO_ODR_FIFO_6600Hz;
-      break;
-  }
-  //Hard code the fifo mode here:
-  tempFIFO_CTRL5 |= settings.fifoModeWord = 6;  //set mode:
-
-  //Write the data
-  writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL1, thresholdLByte);
-  Serial.println(thresholdLByte, HEX);
-  writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL2, thresholdHByte);
-  Serial.println(thresholdHByte, HEX);
-  writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL3, tempFIFO_CTRL3);
-  writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL4, tempFIFO_CTRL4);
-  writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL5, tempFIFO_CTRL5);
-
-
-
-}
-void LSM6DS3::fifoClear( void ) {
-  //Drain the fifo data and dump it
-  while( ( fifoGetStatus() & 0x1000 ) == 0 ) {
-    fifoRead();
-  }
-
-}
-int16_t LSM6DS3::fifoRead( void ) {
-  //Pull the last data from the fifo
-  int16_t tempReturn = 0;
-  tempReturn |= readRegister(LSM6DS3_ACC_GYRO_FIFO_DATA_OUT_L);
-  tempReturn |= (readRegister(LSM6DS3_ACC_GYRO_FIFO_DATA_OUT_H)) << 8;
-
-  return tempReturn;
-}
-
-uint16_t LSM6DS3::fifoGetStatus( void ) {
-  //Return some data on the state of the fifo
-  uint16_t tempReturn = 0;
-  tempReturn |= readRegister(LSM6DS3_ACC_GYRO_FIFO_STATUS1);
-  tempReturn |= ((readRegister(LSM6DS3_ACC_GYRO_FIFO_STATUS2)) << 8);
-
-  return tempReturn;
-}
-void LSM6DS3::fifoEnd( void ) {
-  // turn off the fifo
-  writeRegister(LSM6DS3_ACC_GYRO_FIFO_STATUS1, 0x00);  //Disable
-}
-
-
-//****************************************************************************//
-//
 //  Utility
 //
 //****************************************************************************//
@@ -499,46 +399,60 @@ void LSM6DS3::readRegisterRegion(uint8_t *outputPointer , uint8_t offset, uint8_
   //define pointer that will point to the external space
   uint8_t i = 0;
   char c = 0;
+  uint8_t retryCounter = 0;
 
   switch (settings.commInterface) {
-
+  
     case I2C_MODE:
       Wire.beginTransmission(settings.I2CAddress);
       Wire.write(offset);
       Wire.endTransmission();
-
+  
       // request 6 bytes from slave device
       Wire.requestFrom(settings.I2CAddress, length);
-      while ( (Wire.available()) && (i < length))  // slave may send less than requested
+      while ( (Wire.available()) && (i < length) && (retryCounter < RETRY_LIMIT))  // slave may send less than requested
       {
         c = Wire.read(); // receive a byte as character
         *outputPointer = c;
         outputPointer++;
         i++;
+  	retryCounter++;
+  
       }
       break;
-
+  
     case SPI_MODE:
       // take the chip select low to select the device:
       digitalWrite(settings.chipSelectPin, LOW);
       // send the device the register you want to read:
       SPI.transfer(offset | 0x80);  //Ored with "read request" bit
-      while ( i < length ) // slave may send less than requested
+      while ( (i < length) && (retryCounter < RETRY_LIMIT)) // slave may send less than requested
       {
+  	Serial.println(retryCounter);
         c = SPI.transfer(0x00); // receive a byte as character
         *outputPointer = c;
         outputPointer++;
         i++;
+  	retryCounter++;
       }
       // take the chip select high to de-select:
       digitalWrite(settings.chipSelectPin, HIGH);
       break;
-
+  
     default:
       break;
   }
-
+  if( retryCounter >= RETRY_LIMIT)
+  {
+    driverStatus = IMU_HW_ERROR;
+  }
+  else
+  {
+    driverStatus = IMU_SUCCESS;
+  }
 }
+
+
 
 uint8_t LSM6DS3::readRegister(uint8_t offset) {
   //Return value
@@ -602,3 +516,18 @@ void LSM6DS3::writeRegister(uint8_t offset, uint8_t dataToWrite) {
   }
 }
 
+//****************************************************************************//
+//
+//  Error checking
+//
+//****************************************************************************//
+status_t LSM6DS3::getStatus( void )
+{
+	//Move the configuration down a level
+	if(settings.status == IMU_NOT_CONFIGURED)
+	{
+		driverStatus = IMU_NOT_CONFIGURED;
+	}
+	
+	return driverStatus;
+}

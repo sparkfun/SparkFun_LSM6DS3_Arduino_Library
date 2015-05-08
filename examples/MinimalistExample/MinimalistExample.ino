@@ -1,4 +1,3 @@
-#include "SparkFunIMU.h"
 #include "SparkFunLSM6DS3.h"
 #include "Wire.h"
 #include "SPI.h"
@@ -7,7 +6,7 @@ LSM6DS3 myIMU;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin(57600);
   myIMU.settings.commInterface = I2C_MODE;
   myIMU.begin();
 }
@@ -30,14 +29,6 @@ void loop()
   Serial.println(myIMU.readGyroY(), 4);
   Serial.print(" Z = ");
   Serial.println(myIMU.readGyroZ(), 4);
-
-  Serial.print("\nMagnetometer:\n");
-  Serial.print(" X = ");
-  Serial.println(myIMU.readMagX(), 4);
-  Serial.print(" Y = ");
-  Serial.println(myIMU.readMagY(), 4);
-  Serial.print(" Z = ");
-  Serial.println(myIMU.readMagZ(), 4);
 
   Serial.print("\nThermometer:\n");
   Serial.print(" Degrees C = ");

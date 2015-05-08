@@ -88,6 +88,9 @@ void loop()
     Serial.write("\n  imu begin     Start the driver");
     Serial.write("\n  imu readall   Read all parameters");
     Serial.write("\n  imu peak      Hold the peak value");
+    Serial.write("\n  imu set1      Load settings set 1");
+    Serial.write("\n  imu set2      Load settings set 2");
+    Serial.write("\n  imu set3      Load settings set 3");
 
     Serial.write("\n\n");
   }
@@ -117,7 +120,22 @@ void loop()
     {
       DUT.readAllPeak();
     }
-  }
+    if (stringcompare(tty.cmd_entered_ptr, "set1", 4, 4))
+    {
+      DUT.set1();
+	  Serial.print("OK\n");
+    }
+    if (stringcompare(tty.cmd_entered_ptr, "set2", 4, 4))
+    {
+      DUT.set2();
+	  Serial.print("OK\n");
+    }
+    if (stringcompare(tty.cmd_entered_ptr, "set3", 4, 4))
+    {
+      DUT.set3();
+	  Serial.print("OK\n");
+    }
+}
 
   if (stringcompare(tty.cmd_entered_ptr, "blink", 0, 0))
   {
@@ -130,6 +148,5 @@ void loop()
     }
   }
 }
-
 
 
