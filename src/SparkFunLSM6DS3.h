@@ -48,39 +48,39 @@ struct SensorSettings {
     uint8_t fifoModeWord;
 };
 
+
+
 class LSM6DS3
 {
   public:
     SensorSettings settings;
 
-    float xAccel;
-    float yAccel;
-    float zAccel;
-    float xGyro;
-    float yGyro;
-    float zGyro;
 
-    float celsiusTemp;
-    float fahrenheitTemp;
-    
-  protected:
-    // These two funcs are only for demo
-    uint8_t readAccelWhoAmI() { return 0x41; }
-    uint8_t readMagWhoAmI()   { return 0x3E; }
+	protected:
     // Anything?
   public:
     LSM6DS3( void );
     ~LSM6DS3() = default;
     uint8_t begin(void);
-    float readGyroX(void);
-    float readGyroY(void);
-    float readGyroZ(void);
-    float readAccelX(void);
-    float readAccelY(void);
-    float readAccelZ(void);
 
-    float readTempC(void);
-    float readTempF(void);
+    int16_t readRawAccelX( void );
+    int16_t readRawAccelY( void );
+    int16_t readRawAccelZ( void );
+    int16_t readRawGyroX( void );
+    int16_t readRawGyroY( void );
+    int16_t readRawGyroZ( void );
+
+    float readFloatAccelX( void );
+    float readFloatAccelY( void );
+    float readFloatAccelZ( void );
+    float readFloatGyroX( void );
+    float readFloatGyroY( void );
+    float readFloatGyroZ( void );
+
+	int16_t readRawTemp( void );
+	
+    float readTempC( void );
+    float readTempF( void );
 
     void fifoBegin( void );
     void fifoClear( void );
@@ -88,10 +88,14 @@ class LSM6DS3
     uint16_t fifoGetStatus( void );
     void fifoEnd( void );
 
-    //private:
     void readRegisterRegion(uint8_t*, uint8_t, uint8_t );
     uint8_t readRegister(uint8_t);
     void writeRegister(uint8_t, uint8_t);
+	
+  private:
+	float calcGyro( int16_t );
+	float calcAccel( int16_t );
+	
 
 };
 

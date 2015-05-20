@@ -42,16 +42,6 @@ LSM6DS3::LSM6DS3( void )
   settings.fifoSampleRate = 10;  //default 10Hz
   settings.fifoModeWord = 0;  //Default off
 
-  //Clear out data regs
-  xAccel = 0;
-  yAccel = 0;
-  zAccel = 0;
-  xGyro = 0;
-  yGyro = 0;
-  zGyro = 0;
-  celsiusTemp = 0;
-  fahrenheitTemp = 0;
-
 }
 
 
@@ -243,38 +233,49 @@ uint8_t LSM6DS3::begin()
 //  Accelerometer section
 //
 //****************************************************************************//
-float LSM6DS3::readAccelX()
+int16_t LSM6DS3::readRawAccelX( void )
 {
   uint8_t myBuffer[2];
   readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTX_L_XL, 2);  //Does memory transfer
-
-  //Do the math to get from raw numbers to useful parts.  Save into class.
-  //Do counts * (min unit/count) * full scale
-  xAccel = (float)(myBuffer[0] | (myBuffer[1] << 8)) * 0.061 * (settings.accelRange >> 1) / 1000;
-
-  return xAccel;
+  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  return output;
 }
-float LSM6DS3::readAccelY()
+float LSM6DS3::readFloatAccelX( void )
+{
+  float output = calcAccel(readRawAccelX());
+  return output;
+}
+
+int16_t LSM6DS3::readRawAccelY( void )
 {
   uint8_t myBuffer[2];
   readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTY_L_XL, 2);  //Does memory transfer
-
-  //Do the math to get from raw numbers to useful parts.  Save into class.
-  //Do counts * (min unit/count) * full scale
-  yAccel = (float)(myBuffer[0] | (myBuffer[1] << 8)) * 0.061 * (settings.accelRange >> 1) / 1000;
-
-  return yAccel;
+  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  return output;
 }
-float LSM6DS3::readAccelZ()
+float LSM6DS3::readFloatAccelY( void )
+{
+  float output = calcAccel(readRawAccelY());
+  return output;
+}
+
+int16_t LSM6DS3::readRawAccelZ( void )
 {
   uint8_t myBuffer[2];
   readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTZ_L_XL, 2);  //Does memory transfer
+  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  return output;
+}
+float LSM6DS3::readFloatAccelZ( void )
+{
+  float output = calcAccel(readRawAccelZ());
+  return output;
+}
 
-  //Do the math to get from raw numbers to useful parts.  Save into class.
-  //Do counts * (min unit/count) * full scale
-  zAccel = (float)(myBuffer[0] | (myBuffer[1] << 8)) * 0.061 * (settings.accelRange >> 1) / 1000;
-
-  return zAccel;
+float LSM6DS3::calcAccel( int16_t input )
+{
+  float output = (float)input * 0.061 * (settings.accelRange >> 1) / 1000;
+  return output;
 }
 
 //****************************************************************************//
@@ -282,93 +283,89 @@ float LSM6DS3::readAccelZ()
 //  Gyroscope section
 //
 //****************************************************************************//
-float LSM6DS3::readGyroX()
+int16_t LSM6DS3::readRawGyroX( void )
 {
   uint8_t myBuffer[2];
   readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTX_L_G, 2);  //Does memory transfer
-
-  uint8_t gyroRangeDivisor = settings.gyroRange / 125;
-  if ( settings.gyroRange == 245 ) {
-    gyroRangeDivisor = 2;
-  }
-  
-  //Do the math to get from raw numbers to useful parts.  Save into class.
-  //Do counts * (min unit/count) * full scale
-  xGyro = (float)(myBuffer[0] | (myBuffer[1] << 8)) * 4.375 * (gyroRangeDivisor) / 1000;
-
-  return xAccel;
+  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  return output;
 }
-float LSM6DS3::readGyroY()
+float LSM6DS3::readFloatGyroX( void )
+{
+  float output = calcGyro(readRawGyroX());
+  return output;
+}
+
+int16_t LSM6DS3::readRawGyroY( void )
 {
   uint8_t myBuffer[2];
   readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTY_L_G, 2);  //Does memory transfer
-
-  uint8_t gyroRangeDivisor = settings.gyroRange / 125;
-  if ( settings.gyroRange == 245 ) {
-    gyroRangeDivisor = 2;
-  }
-  
-  //Do the math to get from raw numbers to useful parts.  Save into class.
-  //Do counts * (min unit/count) * full scale
-  yGyro = (float)(myBuffer[0] | (myBuffer[1] << 8)) * 4.375 * (gyroRangeDivisor) / 1000;
-
-  return yAccel;
+  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  return output;
 }
-float LSM6DS3::readGyroZ()
+float LSM6DS3::readFloatGyroY( void )
+{
+  float output = calcGyro(readRawGyroY());
+  return output;
+}
+
+int16_t LSM6DS3::readRawGyroZ( void )
 {
   uint8_t myBuffer[2];
   readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTZ_L_G, 2);  //Does memory transfer
+  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  return output;
+}
+float LSM6DS3::readFloatGyroZ( void )
+{
+  float output = calcGyro(readRawGyroZ());
+  return output;
+}
 
+float LSM6DS3::calcGyro( int16_t input )
+{
   uint8_t gyroRangeDivisor = settings.gyroRange / 125;
   if ( settings.gyroRange == 245 ) {
     gyroRangeDivisor = 2;
   }
   
-  //Do the math to get from raw numbers to useful parts.  Save into class.
-  //Do counts * (min unit/count) * full scale
-  zGyro = (float)(myBuffer[0] | (myBuffer[1] << 8)) * 4.375 * (gyroRangeDivisor) / 1000;
-
-  return zGyro;
+  float output = (float)input * 4.375 * (gyroRangeDivisor) / 1000;
+  return output;
 }
-
 
 //****************************************************************************//
 //
 //  Temperature section
 //
 //****************************************************************************//
-float LSM6DS3::readTempC( void ) {
+int16_t LSM6DS3::readRawTemp( void )
+{
   uint8_t myBuffer[2];
   readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUT_TEMP_L, 2);  //Does memory transfer
-
   //Do the math to get from raw numbers to useful int
-  int16_t outputVariable = myBuffer[0] | (myBuffer[1] << 8);
-
-  outputVariable = outputVariable >> 4; //divide by 16 to scale
-  outputVariable += 25; //Add 25 degrees to remove offset
-
-  //Calibration
-  celsiusTemp = outputVariable;
-  fahrenheitTemp = (celsiusTemp * 9) / 5 + 32;
-
-  return celsiusTemp;
+  int16_t output = myBuffer[0] | (myBuffer[1] << 8);
+  
+  return output;
+  
 }
 
-float LSM6DS3::readTempF( void ) {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUT_TEMP_L, 2);  //Does memory transfer
+float LSM6DS3::readTempC( void )
+{
+  float output = (float)readRawTemp() / 16; //divide by 16 to scale
+  output += 25; //Add 25 degrees to remove offset
 
-  //Do the math to get from raw numbers to useful int
-  int16_t outputVariable = myBuffer[0] | (myBuffer[1] << 8);
+  return output;
+  
+}
 
-  outputVariable = outputVariable >> 4; //divide by 16 to scale
-  outputVariable += 25; //Add 25 degrees to remove offset
+float LSM6DS3::readTempF( void )
+{
+  float output = (float)readRawTemp() / 16; //divide by 16 to scale
+  output += 25; //Add 25 degrees to remove offset
+  output = (output * 9) / 5 + 32;
 
-  //Calibration
-  celsiusTemp = outputVariable;
-  fahrenheitTemp = (celsiusTemp * 9) / 5 + 32;
-
-  return fahrenheitTemp;
+  return output;
+  
 }
 
 //****************************************************************************//
