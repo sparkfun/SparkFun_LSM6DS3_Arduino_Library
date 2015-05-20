@@ -1,10 +1,38 @@
+/******************************************************************************
+SparkFunLSM6DS3.cpp
+LSM6DS3 Arduino and Teensy Driver
+Marshall Taylor @ SparkFun Electronics
+May 20, 2015
+https://github.com/sparkfun/LSM6DS3_Breakout
+
+Resources:
+Uses Wire.h for i2c operation
+Uses SPI.h for SPI operation
+Either can be omitted if not used
+
+Development environment specifics:
+Arduino IDE 1.6.4
+Teensy loader 1.23
+
+This code is beerware; if you see me (or any other SparkFun employee) at the
+local, and you've found our code helpful, please buy us a round!
+Distributed as-is; no warranty is given.
+******************************************************************************/
+//See SparkFunLSM6DS3.h for additional topology notes.
+
 #include "SparkFunLSM6DS3.h"
 #include "stdint.h"
 
 #include "Wire.h"
 #include "SPI.h"
 
-//Constructor
+//****************************************************************************//
+//
+//  Settings and configuration
+//
+//****************************************************************************//
+
+//Constructor -- Specifies default configuration
 LSM6DS3::LSM6DS3( void )
 {
 
@@ -45,7 +73,15 @@ LSM6DS3::LSM6DS3( void )
 }
 
 
-// Public methods
+//****************************************************************************//
+//
+//  Configuration section
+//
+//  This uses the stored SensorSettings to start the IMU
+//  Use statements such as "myIMU.settings.commInterface = SPI_MODE;" or
+//  "myIMU.settings.accelEnabled = 1;" to configure before calling .begin();
+//
+//****************************************************************************//
 uint8_t LSM6DS3::begin()
 {
   //Check the settings structure values to determine how to setup the device
@@ -235,9 +271,7 @@ uint8_t LSM6DS3::begin()
 //****************************************************************************//
 int16_t LSM6DS3::readRawAccelX( void )
 {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTX_L_XL, 2);  //Does memory transfer
-  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  int16_t output = readRegisterInt16( LSM6DS3_ACC_GYRO_OUTX_L_XL );
   return output;
 }
 float LSM6DS3::readFloatAccelX( void )
@@ -248,9 +282,7 @@ float LSM6DS3::readFloatAccelX( void )
 
 int16_t LSM6DS3::readRawAccelY( void )
 {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTY_L_XL, 2);  //Does memory transfer
-  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  int16_t output = readRegisterInt16( LSM6DS3_ACC_GYRO_OUTY_L_XL );
   return output;
 }
 float LSM6DS3::readFloatAccelY( void )
@@ -261,9 +293,7 @@ float LSM6DS3::readFloatAccelY( void )
 
 int16_t LSM6DS3::readRawAccelZ( void )
 {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTZ_L_XL, 2);  //Does memory transfer
-  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  int16_t output = readRegisterInt16( LSM6DS3_ACC_GYRO_OUTZ_L_XL );
   return output;
 }
 float LSM6DS3::readFloatAccelZ( void )
@@ -285,9 +315,7 @@ float LSM6DS3::calcAccel( int16_t input )
 //****************************************************************************//
 int16_t LSM6DS3::readRawGyroX( void )
 {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTX_L_G, 2);  //Does memory transfer
-  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  int16_t output = readRegisterInt16( LSM6DS3_ACC_GYRO_OUTX_L_G );
   return output;
 }
 float LSM6DS3::readFloatGyroX( void )
@@ -298,9 +326,7 @@ float LSM6DS3::readFloatGyroX( void )
 
 int16_t LSM6DS3::readRawGyroY( void )
 {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTY_L_G, 2);  //Does memory transfer
-  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  int16_t output = readRegisterInt16( LSM6DS3_ACC_GYRO_OUTY_L_G );
   return output;
 }
 float LSM6DS3::readFloatGyroY( void )
@@ -311,9 +337,7 @@ float LSM6DS3::readFloatGyroY( void )
 
 int16_t LSM6DS3::readRawGyroZ( void )
 {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUTZ_L_G, 2);  //Does memory transfer
-  int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+  int16_t output = readRegisterInt16( LSM6DS3_ACC_GYRO_OUTZ_L_G );
   return output;
 }
 float LSM6DS3::readFloatGyroZ( void )
@@ -340,14 +364,9 @@ float LSM6DS3::calcGyro( int16_t input )
 //****************************************************************************//
 int16_t LSM6DS3::readRawTemp( void )
 {
-  uint8_t myBuffer[2];
-  readRegisterRegion(myBuffer, LSM6DS3_ACC_GYRO_OUT_TEMP_L, 2);  //Does memory transfer
-  //Do the math to get from raw numbers to useful int
-  int16_t output = myBuffer[0] | (myBuffer[1] << 8);
-  
+  int16_t output = readRegisterInt16( LSM6DS3_ACC_GYRO_OUT_TEMP_L );
   return output;
-  
-}
+}  
 
 float LSM6DS3::readTempC( void )
 {
@@ -454,8 +473,6 @@ void LSM6DS3::fifoBegin( void ) {
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL4, tempFIFO_CTRL4);
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL5, tempFIFO_CTRL5);
 
-
-
 }
 void LSM6DS3::fifoClear( void ) {
   //Drain the fifo data and dump it
@@ -485,7 +502,6 @@ void LSM6DS3::fifoEnd( void ) {
   // turn off the fifo
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_STATUS1, 0x00);  //Disable
 }
-
 
 //****************************************************************************//
 //
@@ -572,6 +588,15 @@ uint8_t LSM6DS3::readRegister(uint8_t offset) {
   return result;
 }
 
+int16_t LSM6DS3::readRegisterInt16( uint8_t offset )
+{
+	uint8_t myBuffer[2];
+	readRegisterRegion(myBuffer, offset, 2);  //Does memory transfer
+	int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
+	
+	return output;
+}
+
 void LSM6DS3::writeRegister(uint8_t offset, uint8_t dataToWrite) {
   switch (settings.commInterface) {
     case I2C_MODE:
@@ -598,4 +623,3 @@ void LSM6DS3::writeRegister(uint8_t offset, uint8_t dataToWrite) {
       break;
   }
 }
-
