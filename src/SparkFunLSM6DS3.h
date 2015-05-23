@@ -130,6 +130,8 @@ class LSM6DS3
     uint8_t readRegister(uint8_t);
 	//writeRegister reads
     void writeRegister(uint8_t, uint8_t);
+	float calcGyro( int16_t );
+	float calcAccel( int16_t );
 	
   private:
     //Reads two regs, LSByte then MSByte order, and concatenates them
@@ -137,8 +139,7 @@ class LSM6DS3
 	int16_t readRegisterInt16( uint8_t offset );
     
 	//Used to do math on read parameters by readFloat___()
-	float calcGyro( int16_t );
-	float calcAccel( int16_t );
+
 
 };
 
