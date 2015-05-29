@@ -51,7 +51,7 @@ struct SensorSettings {
 
   //Accelerometer settings
     uint8_t accelEnabled;
-	
+	uint8_t accelODROff;
     uint16_t accelRange;
     uint16_t accelSampleRate;
     uint16_t accelBandWidth;

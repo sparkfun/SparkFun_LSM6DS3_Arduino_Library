@@ -46,6 +46,7 @@ LSM6DS3::LSM6DS3( void )
   settings.gyroFifoDecimation = 1;  //set 1 for on /1
 
   settings.accelEnabled = 1;
+  settings.accelODROff = 1;
   settings.accelRange = 16;      //Max G force readable.  Can be: 2, 4, 8, 16
   settings.accelSampleRate = 416;  //Hz.  Can be: 13, 26, 52, 104, 208, 416, 833, 1666, 3332, 6664, 13330
   settings.accelBandWidth = 100;  //Hz.  Can be: 50, 100, 200, 400;
@@ -97,12 +98,12 @@ uint8_t LSM6DS3::begin()
       // start the SPI library:
       SPI.begin();
       // Maximum SPI frequency is 10MHz, could divide by 2 here:
-      SPI.setClockDivider(SPI_CLOCK_DIV4);
+      SPI.setClockDivider(SPI_CLOCK_DIV32);
       // Data is read and written MSb first.
       SPI.setBitOrder(MSBFIRST);
       // Data is captured on rising edge of clock (CPHA = 0)
       // Base value of the clock is HIGH (CPOL = 1)
-      SPI.setDataMode(SPI_MODE3);
+      SPI.setDataMode(SPI_MODE0);
       // initalize the  data ready and chip select pins:
       pinMode(settings.chipSelectPin, OUTPUT);
       digitalWrite(settings.chipSelectPin, HIGH);
@@ -194,6 +195,14 @@ uint8_t LSM6DS3::begin()
   //Now, write the patched together data
   writeRegister(LSM6DS3_ACC_GYRO_CTRL1_XL, dataToWrite);
 
+  //Set the ODR bit
+  dataToWrite = readRegister(LSM6DS3_ACC_GYRO_CTRL4_C);
+  dataToWrite &= ~((uint8_t)LSM6DS3_ACC_GYRO_BW_SCAL_ODR_ENABLED);
+  if ( settings.accelODROff == 1) {
+  dataToWrite |= LSM6DS3_ACC_GYRO_BW_SCAL_ODR_ENABLED;
+  }
+  writeRegister(LSM6DS3_ACC_GYRO_CTRL4_C, dataToWrite);
+  
   //Setup the gyroscope**********************************************
   dataToWrite = 0; //Start Fresh!
   if ( settings.gyroEnabled == 1) {
