@@ -103,7 +103,9 @@ uint8_t LSM6DS3::begin()
       SPI.setBitOrder(MSBFIRST);
       // Data is captured on rising edge of clock (CPHA = 0)
       // Base value of the clock is HIGH (CPOL = 1)
-      SPI.setDataMode(SPI_MODE0);
+	  // This was SPI_MODE3 for RedBoard, but I had to change to
+	  // MODE0 for Teensy 3.1 operation
+      SPI.setDataMode(SPI_MODE3);
       // initalize the  data ready and chip select pins:
       pinMode(settings.chipSelectPin, OUTPUT);
       digitalWrite(settings.chipSelectPin, HIGH);
@@ -510,6 +512,102 @@ uint16_t LSM6DS3::fifoGetStatus( void ) {
 void LSM6DS3::fifoEnd( void ) {
   // turn off the fifo
   writeRegister(LSM6DS3_ACC_GYRO_FIFO_STATUS1, 0x00);  //Disable
+}
+
+//****************************************************************************//
+//
+//  Interrupt stuff
+//
+//****************************************************************************//
+
+//Interrupt stuff - methods for various configurations
+void LSM6DS3::FreeFall( void )
+{
+	//This configures the free-fall interrupt to a default
+	
+    // Turn on the accelerometer
+    // Write 60h into CTRL1_XL
+	begin();
+	//writeRegister(LSM6DS3_ACC_GYRO_CTRL1_XL, 0x60);
+    
+    // ODR_XL = 416 Hz, FS_XL = 2g
+    // Set event duration (FF_DUR5 bit)
+    // Write 00h into WAKE_UP_DUR 
+	writeRegister(LSM6DS3_ACC_GYRO_WAKE_UP_DUR, 0x00);
+    
+    // Set FF threshold (FF_THS[2:0] = 011b)
+    // Set six samples event duration (FF_DUR[5:0] = 000110b)
+    // Write 33h into FREE_FALL 
+    writeRegister(LSM6DS3_ACC_GYRO_FREE_FALL, 0x33);
+	
+    // FF interrupt driven to INT1 pin
+    // Write 10h into MD1_CFG
+    writeRegister(LSM6DS3_ACC_GYRO_MD1_CFG, 0x10);
+    
+    // Latch interrupt
+    // Write 01h into TAP_CFG 
+    writeRegister(LSM6DS3_ACC_GYRO_TAP_CFG1, 0x01);
+
+}
+
+void LSM6DS3::Tap( void )
+{
+	// Turn on the accelerometer
+	// ODR_XL = 416 Hz, FS_XL = 2g
+	// Write 60h into CTRL1_XL
+	//writeRegister( LSM6DS3_ACC_GYRO_CTRL1_XL, 0x60 );
+	begin();
+	
+	// Enable tap detection on X, Y, Z axis
+	// Write 0Eh into TAP_CFG
+	writeRegister( LSM6DS3_ACC_GYRO_TAP_CFG1, 0x0E );
+	
+	// Set tap threshold
+	// Write 09h into TAP_THS_6D
+	writeRegister( LSM6DS3_ACC_GYRO_TAP_THS_6D, 0x09 );
+	
+	// Set Quiet and Shock time windows
+	// Write 06h into INT_DUR2
+	writeRegister( LSM6DS3_ACC_GYRO_INT_DUR2, 0x06 );
+	
+	// Only single tap enabled (SINGLE_DOUBLE_TAP = 0)
+	// Write 00h into WAKE_UP_THS
+	writeRegister( LSM6DS3_ACC_GYRO_WAKE_UP_THS, 0x00 );
+	
+	// Single tap interrupt driven to INT1 pin
+	// Write 40h into MD1_CFG
+	writeRegister( LSM6DS3_ACC_GYRO_MD1_CFG, 0x40 );
+	
+}
+
+void LSM6DS3::DoubleTap( void )
+{
+	// Turn on the accelerometer 
+	// ODR_XL = 416 Hz, FS_XL = 2g
+	// Write 60h into CTRL1_XL
+	//writeRegister( LSM6DS3_ACC_GYRO_CTRL1_XL, 0x60 );
+	begin();
+	
+	// Enable tap detection on X, Y, Z axis
+	// Write 0Eh into TAP_CFG
+	writeRegister( LSM6DS3_ACC_GYRO_TAP_CFG1, 0x0E );
+	
+	// Set tap threshold
+	// Write 0Ch into TAP_THS_6D
+	writeRegister( LSM6DS3_ACC_GYRO_TAP_THS_6D, 0x0C );
+	
+	// Set Duration, Quiet and Shock time windows
+	// Write 7Fh into INT_DUR2
+	writeRegister( LSM6DS3_ACC_GYRO_INT_DUR2, 0x7F );
+	
+	// Single & Double tap enabled (SINGLE_DOUBLE_TAP = 1)
+	// Write 80h into WAKE_UP_THS
+	writeRegister( LSM6DS3_ACC_GYRO_WAKE_UP_THS, 0x80 );
+	
+	// Single tap interrupt driven to INT1 pin
+	// Write 08h into MD1_CFG
+	writeRegister( LSM6DS3_ACC_GYRO_MD1_CFG, 0x08 );
+	
 }
 
 //****************************************************************************//

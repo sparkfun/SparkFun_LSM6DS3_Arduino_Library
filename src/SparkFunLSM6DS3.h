@@ -108,8 +108,8 @@ class LSM6DS3
     float readFloatGyroY( void );
     float readFloatGyroZ( void );
 
+	//Temperature related methods
 	int16_t readRawTemp( void );
-	
     float readTempC( void );
     float readTempF( void );
 
@@ -119,27 +119,31 @@ class LSM6DS3
     int16_t fifoRead( void );
     uint16_t fifoGetStatus( void );
     void fifoEnd( void );
+	
+	//Interrupt methods for various configurations
+	void FreeFall( void );
+	void Tap( void );
+	void DoubleTap( void );
 
     //The following utilities read and write to the IMU
-	//They are called by the other members, but can be
 
-	//This takes a uint8 array as input and reads a chunck of memory
-	//to that array.
+	//ReadRegisterRegion takes a uint8 array address as input and reads
+	//a chunk of memory into that array.
     void readRegisterRegion(uint8_t*, uint8_t, uint8_t );
 	//readRegister reads one register
     uint8_t readRegister(uint8_t);
-	//writeRegister reads
-    void writeRegister(uint8_t, uint8_t);
-	float calcGyro( int16_t );
-	float calcAccel( int16_t );
-	
-  private:
     //Reads two regs, LSByte then MSByte order, and concatenates them
 	//Used for two-byte reads
 	int16_t readRegisterInt16( uint8_t offset );
-    
-	//Used to do math on read parameters by readFloat___()
+	//Writes a byte;
+    void writeRegister(uint8_t, uint8_t);
+	
+	float calcGyro( int16_t );
+	float calcAccel( int16_t );
+	
 
+    
+    private:
 
 };
 
