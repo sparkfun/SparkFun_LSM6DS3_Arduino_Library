@@ -35,7 +35,7 @@ Documentation
 --------------
 
 * **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
-* **[Product Repository](https://github.com/sparkfun/LSM6DS3_Breakout/)** - Main repository (including hardware files) for the LSM5DS3 Breakout.
+* **[Product Repository](https://github.com/sparkfun/LSM6DS3_Breakout/)** - Main repository (including hardware files) for the LSM6DS3 Breakout.
 * **[Hookup Guide](https://learn.sparkfun.com/tutorials/lsm6ds3-breakout-hookup-guide)** - Basic hookup guide for the LSM6DS3 Breakout.
 
 Products that use this Library 
