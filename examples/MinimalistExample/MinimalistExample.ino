@@ -1,12 +1,16 @@
 /******************************************************************************
 MinimalistExample.ino
 
-Example using the LSM6DS3 with basic settings.  This sketch collects Gyro and
-Accelerometer data every second, then presents it on the serial monitor.
-
 Marshall Taylor @ SparkFun Electronics
 May 20, 2015
 https://github.com/sparkfun/LSM6DS3_Breakout
+https://github.com/sparkfun/SparkFun_LSM6DS3_Arduino_Library
+
+Description:
+Most basic example of use.
+
+Example using the LSM6DS3 with basic settings.  This sketch collects Gyro and
+Accelerometer data every second, then presents it on the serial monitor.
 
 Resources:
 Uses Wire.h for i2c operation
@@ -22,24 +26,26 @@ Connect I2C SDA line to A4
 Connect I2C SCL line to A5
 Connect GND and 3.3v power to the IMU
 
-This code is beerware; if you see me (or any other SparkFun employee) at the
-local, and you've found our code helpful, please buy us a round!
+This code is released under the [MIT License](http://opensource.org/licenses/MIT).
+
+Please review the LICENSE.md file included with this example. If you have any questions 
+or concerns with licensing, please contact techsupport@sparkfun.com.
+
 Distributed as-is; no warranty is given.
 ******************************************************************************/
+
 #include "SparkFunLSM6DS3.h"
 #include "Wire.h"
 #include "SPI.h"
 
-LSM6DS3 myIMU;
+LSM6DS3 myIMU; //Default constructor is I2C, addr 0x6B
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   delay(1000); //relax...
-  Serial.println("Sketch came out of reset.\n");
+  Serial.println("Processor came out of reset.\n");
   
-  //Select bus if nothing else.
-  myIMU.settings.commInterface = I2C_MODE;
   //Call .begin() to configure the IMU
   myIMU.begin();
   

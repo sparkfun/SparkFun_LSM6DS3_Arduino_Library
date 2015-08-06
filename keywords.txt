@@ -1,0 +1,49 @@
+########################################################
+# Syntax Coloring Map for SparkFun LSM6DS3 IMU Library #
+########################################################
+# Class
+###################################################################
+
+LSM6DS3	                KEYWORD1
+LSM6DS3Core             KEYWORD1
+
+###################################################################
+# Methods and Functions
+###################################################################
+	beginCore           KEYWORD2
+	readRegisterRegion  KEYWORD2
+	readRegister        KEYWORD2
+	readRegisterInt16   KEYWORD2
+	writeRegister       KEYWORD2
+	embeddedPage        KEYWORD2
+	basePage            KEYWORD2
+
+	begin               KEYWORD2
+	readRawAccelX       KEYWORD2
+	readRawAccelY       KEYWORD2
+	readRawAccelZ       KEYWORD2
+	readRawGyroX        KEYWORD2
+	readRawGyroY        KEYWORD2
+	readRawGyroZ        KEYWORD2
+	readFloatAccelX     KEYWORD2
+	readFloatAccelY     KEYWORD2
+	readFloatAccelZ     KEYWORD2
+	readFloatGyroX      KEYWORD2
+	readFloatGyroY      KEYWORD2
+	readFloatGyroZ      KEYWORD2
+	readRawTemp         KEYWORD2
+	readTempC           KEYWORD2
+	readTempF           KEYWORD2
+	fifoBegin           KEYWORD2
+	fifoClear           KEYWORD2
+	fifoRead            KEYWORD2
+	fifoGetStatus       KEYWORD2
+	fifoEnd             KEYWORD2
+	calcGyro            KEYWORD2
+	calcAccel           KEYWORD2
+	
+###################################################################
+# Constants
+###################################################################
+	I2C_MODE            LITERAL1
+	SPI_MODE            LITERAL1

@@ -40,9 +40,9 @@ License Information
 
 This product is _**open source**_! 
 
-The **code** is beerware; if you see me (or any other SparkFun employee) at the local, and you've found our code helpful, please buy us a round!
+Please review the LICENSE.md file for license information. 
 
-Please use, reuse, and modify these files as you see fit. Please maintain attribution to SparkFun Electronics and release anything derivative under the same license.
+If you have any questions or concerns on licensing, please contact techsupport@sparkfun.com.
 
 Distributed as-is; no warranty is given.
 
