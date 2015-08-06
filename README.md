@@ -1,11 +1,13 @@
-SparkFun <PRODUCT NAME> Arduino Library
+SparkFun LSM6DS3 Arduino Library
 ========================================
 
-![SparkFun Part Name](URL for picture of part)
+![LSM6DS3 Breakout](URL for picture of part)
 
-[*SparkFun Part Name (SKU)*](URL for product on Sparkfun.com)
+[*SparkFun Part Name (SKU)*](https://cdn.sparkfun.com/assets/learn_tutorials/4/1/6/perspective.jpg)
 
-<Basic description of the library.>
+This is an arduino IDE library to control the LSM6DS3.  It can be configured to use I2C or SPI with 2 instances per I2C channel or any number of SPI instances.  The top-level driver, class LSM6DS3, contains an inner driver LSM6DS3Core, a settings struct, and float-based math functions for conversion from raw to meaningful numbers.
+
+This has been tested with Arduino Uno and Teensy 3.1 architectures.
 
 Repository Contents
 -------------------
@@ -16,24 +18,34 @@ Repository Contents
 * **keywords.txt** - Keywords from this library that will be highlighted in the Arduino IDE. 
 * **library.properties** - General library properties for the Arduino package manager. 
 
+Example Briefs
+--------------
+
+* FifoExample - Demonstrates using the built-in buffer to burst-collect data - **Good demonstration of settings**
+* InterruptFreeFall - Embedded function demonstrating free-fall detection
+* InterruptHWTapConfig - Embedded function demonstrating tap and double-tap detection
+* LowLevelExample - Demonstrates using only the core driver without math and settings overhead
+* MinimalistExample - The **easiest** configuration
+* MultiI2C - Using two LSM6DS3s over I2C
+* MultiSPI - Using two LSM6DS3s over SPI
+* Pedometer - Embedded function demonstrating step-counting feature
+
 Documentation
 --------------
 
 * **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
-* **[Product Repository](GitHub Product URL)** - Main repository (including hardware files) for the <PRODUCT NAME>.
-* **[Hookup Guide](Learn.SparkFun URL)** - Basic hookup guide for the <PRODUCT NAME>.
+* **[Product Repository](https://github.com/sparkfun/LSM6DS3_Breakout/)** - Main repository (including hardware files) for the LSM5DS3 Breakout.
+* **[Hookup Guide](https://learn.sparkfun.com/tutorials/lsm6ds3-breakout-hookup-guide)** - Basic hookup guide for the LSM5DS3 Breakout.
 
 Products that use this Library 
 ---------------------------------
 
-* [Part SKU](SparkFun part URL)- Basic part and short description here
-* [Part SKU](SparkFun part URL)- Basic part and short description here
+* [BOB-13339](https://www.sparkfun.com/products/13339)- LSM6DS3 Breakout board
 
 Version History
 ---------------
 
-* [vExxFxxZxxHxxLxxSxx](URL for tag specific to this version) - Description 
-* [vEyyFyyZyyHyyLyySyy](URL for tag specific to this version) - Description
+* [v1.0.0](URL for tag specific to this version) - Description 
 
 License Information
 -------------------
@@ -48,4 +60,3 @@ Distributed as-is; no warranty is given.
 
 - Your friends at SparkFun.
 
-_<COLLABORATION CREDIT>_
