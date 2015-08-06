@@ -1,9 +1,9 @@
 SparkFun LSM6DS3 Arduino Library
 ========================================
 
-![LSM6DS3 Breakout](https://cdn.sparkfun.com/assets/learn_tutorials/4/1/6/perspective.jpg)
+->![LSM6DS3 Breakout](https://cdn.sparkfun.com/assets/learn_tutorials/4/1/6/perspective.jpg)<-
 
-[*LSM6DS3 Breakout (13339)*](https://www.sparkfun.com/products/13339)
+->[*LSM6DS3 Breakout (13339)*](https://www.sparkfun.com/products/13339)<-
 
 This is an arduino IDE library to control the LSM6DS3.  It can be configured to use I2C or SPI with 2 instances per I2C channel or any number of SPI instances.  The top-level driver, class LSM6DS3, contains an inner driver LSM6DS3Core, a settings struct, and float-based math functions for conversion from raw to meaningful numbers.
 
@@ -25,6 +25,7 @@ Example Briefs
 * InterruptFreeFall - Embedded function demonstrating free-fall detection
 * InterruptHWTapConfig - Embedded function demonstrating tap and double-tap detection
 * LowLevelExample - Demonstrates using only the core driver without math and settings overhead
+* MemoryPagingExample - Demonstrates switching between memory pages
 * MinimalistExample - The **easiest** configuration
 * MultiI2C - Using two LSM6DS3s over I2C
 * MultiSPI - Using two LSM6DS3s over SPI
@@ -45,7 +46,7 @@ Products that use this Library
 Version History
 ---------------
 
-* [v1.0.0](URL for tag specific to this version) - Description 
+* [V 1.0.0](https://github.com/sparkfun/SparkFun_LSM6DS3_Arduino_Library/releases/tag/V_1.0.0) -- Initial commit of Arduino 1.6-compatible library.
 
 License Information
 -------------------

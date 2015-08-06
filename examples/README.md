@@ -8,6 +8,7 @@ Example Briefs
 * InterruptFreeFall - Embedded function demonstrating free-fall detection
 * InterruptHWTapConfig - Embedded function demonstrating tap and double-tap detection
 * LowLevelExample - Demonstrates using only the core driver without math and settings overhead
+* MemoryPagingExample - Demonstrates switching between memory pages
 * MinimalistExample - The **easiest** configuration
 * MultiI2C - Using two LSM6DS3s over I2C
 * MultiSPI - Using two LSM6DS3s over SPI
