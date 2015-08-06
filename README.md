@@ -1,9 +1,9 @@
 SparkFun LSM6DS3 Arduino Library
 ========================================
 
-->![LSM6DS3 Breakout](https://cdn.sparkfun.com/assets/learn_tutorials/4/1/6/perspective.jpg)<-
+![LSM6DS3 Breakout](https://cdn.sparkfun.com/assets/learn_tutorials/4/1/6/perspective.jpg)
 
-->[*LSM6DS3 Breakout (13339)*](https://www.sparkfun.com/products/13339)<-
+[*LSM6DS3 Breakout (13339)*](https://www.sparkfun.com/products/13339)
 
 This is an arduino IDE library to control the LSM6DS3.  It can be configured to use I2C or SPI with 2 instances per I2C channel or any number of SPI instances.  The top-level driver, class LSM6DS3, contains an inner driver LSM6DS3Core, a settings struct, and float-based math functions for conversion from raw to meaningful numbers.
 
