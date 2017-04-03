@@ -212,7 +212,7 @@ status_t LSM6DS3Core::readRegisterRegion(uint8_t *outputPointer , uint8_t offset
 //****************************************************************************//
 status_t LSM6DS3Core::readRegister(uint8_t* outputPointer, uint8_t offset) {
 	//Return value
-	uint8_t result;
+	uint8_t result = 0;
 	uint8_t numBytes = 1;
 	status_t returnError = IMU_SUCCESS;
 
