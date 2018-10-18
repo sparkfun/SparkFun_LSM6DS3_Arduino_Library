@@ -18,7 +18,7 @@ Teensy loader 1.23
 
 This code is released under the [MIT License](http://opensource.org/licenses/MIT).
 
-Please review the LICENSE.md file included with this example. If you have any questions 
+Please review the LICENSE.md file included with this example. If you have any questions
 or concerns with licensing, please contact techsupport@sparkfun.com.
 
 Distributed as-is; no warranty is given.
@@ -27,12 +27,13 @@ Distributed as-is; no warranty is given.
 #ifndef __LSM6DS3IMU_H__
 #define __LSM6DS3IMU_H__
 
+#include "Arduino.h"
 #include "stdint.h"
 
 #define I2C_MODE 0
 #define SPI_MODE 1
 
-// Return values 
+// Return values
 typedef enum
 {
 	IMU_SUCCESS,
@@ -55,33 +56,33 @@ public:
 	LSM6DS3Core( uint8_t );
 	LSM6DS3Core( uint8_t, uint8_t );
 	~LSM6DS3Core() = default;
-	
+
 	status_t beginCore( void );
-	
+
 	//The following utilities read and write to the IMU
 
 	//ReadRegisterRegion takes a uint8 array address as input and reads
 	//  a chunk of memory into that array.
 	status_t readRegisterRegion(uint8_t*, uint8_t, uint8_t );
-	
+
 	//readRegister reads one 8-bit register
 	status_t readRegister(uint8_t*, uint8_t);
-	
+
 	//Reads two 8-bit regs, LSByte then MSByte order, and concatenates them.
 	//  Acts as a 16-bit read operation
 	status_t readRegisterInt16(int16_t*, uint8_t offset );
-	
+
 	//Writes an 8-bit byte;
 	status_t writeRegister(uint8_t, uint8_t);
-	
+
 	//Change to embedded page
 	status_t embeddedPage( void );
-	
+
 	//Change to base page
 	status_t basePage( void );
-	
+
 private:
-	
+
 	//Communication stuff
 	uint8_t commInterface;
 	uint8_t I2CAddress;
@@ -107,21 +108,21 @@ public:
 	uint16_t accelRange;
 	uint16_t accelSampleRate;
 	uint16_t accelBandWidth;
-	
+
 	uint8_t accelFifoEnabled;
 	uint8_t accelFifoDecimation;
-	
+
 	//Temperature settings
 	uint8_t tempEnabled;
-	
+
 	//Non-basic mode settings
 	uint8_t commMode;
-	
+
 	//FIFO control data
 	uint16_t fifoThreshold;
 	int16_t fifoSampleRate;
 	uint8_t fifoModeWord;
-	
+
 };
 
 
@@ -136,7 +137,7 @@ class LSM6DS3 : public LSM6DS3Core
 public:
 	//IMU settings
 	SensorSettings settings;
-	
+
 	//Error checking
 	uint16_t allOnesCounter;
 	uint16_t nonSuccessCounter;
@@ -145,7 +146,7 @@ public:
 	//(over-ride after construction if desired)
 	LSM6DS3( uint8_t busType = I2C_MODE, uint8_t inputArg = 0x6B );
 	~LSM6DS3() = default;
-	
+
 	//Call to apply SensorSettings
 	status_t begin(void);
 
@@ -176,10 +177,10 @@ public:
 	int16_t fifoRead( void );
 	uint16_t fifoGetStatus( void );
 	void fifoEnd( void );
-	
+
 	float calcGyro( int16_t );
 	float calcAccel( int16_t );
-	
+
 private:
 
 };
