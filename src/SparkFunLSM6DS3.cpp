@@ -28,7 +28,6 @@ Distributed as-is; no warranty is given.
 
 #include "SparkFunLSM6DS3.h"
 #include "stdint.h"
-
 #include "Wire.h"
 #include "SPI.h"
 
@@ -78,7 +77,11 @@ status_t LSM6DS3Core::beginCore(void)
 		// Maximum SPI frequency is 10MHz, could divide by 2 here:
 		SPI.setClockDivider(SPI_CLOCK_DIV4);
 		// Data is read and written MSb first.
+#ifdef ESP32
+		SPI.setBitOrder(SPI_MSBFIRST);
+#else
 		SPI.setBitOrder(MSBFIRST);
+#endif
 		// Data is captured on rising edge of clock (CPHA = 0)
 		// Base value of the clock is HIGH (CPOL = 1)
 
@@ -212,7 +215,7 @@ status_t LSM6DS3Core::readRegisterRegion(uint8_t *outputPointer , uint8_t offset
 //****************************************************************************//
 status_t LSM6DS3Core::readRegister(uint8_t* outputPointer, uint8_t offset) {
 	//Return value
-	uint8_t result;
+	uint8_t result = 0;
 	uint8_t numBytes = 1;
 	status_t returnError = IMU_SUCCESS;
 
