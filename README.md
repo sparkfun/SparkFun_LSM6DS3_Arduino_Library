@@ -46,6 +46,7 @@ Products that use this Library
 Version History
 ---------------
 
+* [V 1.0.0](https://github.com/sparkfun/SparkFun_LSM6DS3_Arduino_Library/releases/tag/V_1.0.0) -- Initial commit of Arduino 1.6-compatible library.
 * [V 1.0.1](https://github.com/sparkfun/SparkFun_LSM6DS3_Arduino_Library/releases/tag/V_1.0.1) -- Adds SPI compatibility to the ESP32 and ESP8266 boards for this product. 
 
 License Information
