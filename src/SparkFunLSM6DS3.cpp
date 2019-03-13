@@ -1,6 +1,6 @@
 /******************************************************************************
 SparkFunLSM6DS3.cpp
-LSM6DS3 Arduino and Teensy Driver
+LSM6DS3 Arduino, Teensy Driver, SparkFun ESP32 and ESP8266
 
 Marshall Taylor @ SparkFun Electronics
 May 20, 2015
@@ -15,6 +15,7 @@ Either can be omitted if not used
 Development environment specifics:
 Arduino IDE 1.6.4
 Teensy loader 1.23
+ESPTool 2.6 for ESP32
 
 This code is released under the [MIT License](http://opensource.org/licenses/MIT).
 
@@ -27,9 +28,6 @@ Distributed as-is; no warranty is given.
 //See SparkFunLSM6DS3.h for additional topology notes.
 
 #include "SparkFunLSM6DS3.h"
-#include "stdint.h"
-#include "Wire.h"
-#include "SPI.h"
 
 //****************************************************************************//
 //
@@ -78,6 +76,8 @@ status_t LSM6DS3Core::beginCore(void)
 		SPI.setClockDivider(SPI_CLOCK_DIV4);
 		// Data is read and written MSb first.
 #ifdef ESP32
+		SPI.setBitOrder(SPI_MSBFIRST);
+#elif ESP8266
 		SPI.setBitOrder(SPI_MSBFIRST);
 #else
 		SPI.setBitOrder(MSBFIRST);
