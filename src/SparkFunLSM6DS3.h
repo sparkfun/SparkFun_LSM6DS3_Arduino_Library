@@ -149,7 +149,7 @@ public:
 	~LSM6DS3() = default;
 	
 	//Call to apply SensorSettings
-	status_t begin(SensorSettings* pActualSettings = NULL);
+	status_t begin(SensorSettings* pSettingsYouWanted = NULL);
 
 	//Returns the raw bits from the sensor cast as 16-bit signed integers
 	int16_t readRawAccelX( void );
