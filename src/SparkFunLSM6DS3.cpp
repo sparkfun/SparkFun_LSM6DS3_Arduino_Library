@@ -388,13 +388,36 @@ LSM6DS3::LSM6DS3( uint8_t busType, uint8_t inputArg ) : LSM6DS3Core( busType, in
 //  "myIMU.settings.accelEnabled = 1;" to configure before calling .begin();
 //
 //****************************************************************************//
-status_t LSM6DS3::begin()
+status_t LSM6DS3::begin(SensorSettings* pActualSettings)
 {
 	//Check the settings structure values to determine how to setup the device
 	uint8_t dataToWrite = 0;  //Temporary variable
 
 	//Begin the inherited core.  This gets the physical wires connected
 	status_t returnError = beginCore();
+	
+	// Copy the values from the user's settings into the output 'pActualSettings'
+	// that will reflect if any default choices had to be made
+	if(pActualSettings != NULL){ 
+		pActualSettings->gyroEnabled = settings.gyroEnabled;
+		pActualSettings->gyroRange = settings.gyroRange;
+		pActualSettings->gyroSampleRate = settings.gyroSampleRate;
+		pActualSettings->gyroBandWidth = settings.gyroBandWidth;
+		pActualSettings->gyroFifoEnabled = settings.gyroFifoEnabled;
+		pActualSettings->gyroFifoDecimation = settings.gyroFifoDecimation;
+		pActualSettings->accelEnabled = settings.accelEnabled;
+		pActualSettings->accelODROff = settings.accelODROff;
+		pActualSettings->accelRange = settings.accelRange;
+		pActualSettings->accelSampleRate = settings.accelSampleRate;
+		pActualSettings->accelBandWidth = settings.accelBandWidth;
+		pActualSettings->accelFifoEnabled = settings.accelFifoEnabled;
+		pActualSettings->accelFifoDecimation = settings.accelFifoDecimation;
+		pActualSettings->tempEnabled = settings.tempEnabled;
+		pActualSettings->commMode = settings.commMode;
+		pActualSettings->fifoThreshold = settings.fifoThreshold;
+		pActualSettings->fifoSampleRate = settings.fifoSampleRate;
+		pActualSettings->fifoModeWord = settings.fifoModeWord;
+	}
 
 	//Setup the accelerometer******************************
 	dataToWrite = 0; //Start Fresh!
@@ -412,6 +435,7 @@ status_t LSM6DS3::begin()
 			dataToWrite |= LSM6DS3_ACC_GYRO_BW_XL_200Hz;
 			break;
 		default:  //set default case to max passthrough
+			if(pActualSettings != NULL){ pActualSettings->accelBandWidth = 400; }
 		case 400:
 			dataToWrite |= LSM6DS3_ACC_GYRO_BW_XL_400Hz;
 			break;
@@ -428,6 +452,7 @@ status_t LSM6DS3::begin()
 			dataToWrite |= LSM6DS3_ACC_GYRO_FS_XL_8g;
 			break;
 		default:  //set default case to 16(max)
+			if(pActualSettings != NULL){ pActualSettings->accelRange = 16; }
 		case 16:
 			dataToWrite |= LSM6DS3_ACC_GYRO_FS_XL_16g;
 			break;
@@ -444,6 +469,7 @@ status_t LSM6DS3::begin()
 			dataToWrite |= LSM6DS3_ACC_GYRO_ODR_XL_52Hz;
 			break;
 		default:  //Set default to 104
+			if(pActualSettings != NULL){ pActualSettings->accelSampleRate = 104; }
 		case 104:
 			dataToWrite |= LSM6DS3_ACC_GYRO_ODR_XL_104Hz;
 			break;
@@ -505,6 +531,7 @@ status_t LSM6DS3::begin()
 			dataToWrite |= LSM6DS3_ACC_GYRO_FS_G_1000dps;
 			break;
 		default:  //Default to full 2000DPS range
+			if(pActualSettings != NULL){ pActualSettings->gyroRange = 2000; }
 		case 2000:
 			dataToWrite |= LSM6DS3_ACC_GYRO_FS_G_2000dps;
 			break;
@@ -521,6 +548,7 @@ status_t LSM6DS3::begin()
 			dataToWrite |= LSM6DS3_ACC_GYRO_ODR_G_52Hz;
 			break;
 		default:  //Set default to 104
+			if(pActualSettings != NULL){ pActualSettings->gyroSampleRate = gyroSampleRate; }
 		case 104:
 			dataToWrite |= LSM6DS3_ACC_GYRO_ODR_G_104Hz;
 			break;
