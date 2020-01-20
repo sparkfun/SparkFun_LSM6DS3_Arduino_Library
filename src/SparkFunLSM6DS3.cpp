@@ -435,7 +435,7 @@ status_t LSM6DS3::begin(SensorSettings* pSettingsYouWanted)
 			dataToWrite |= LSM6DS3_ACC_GYRO_BW_XL_200Hz;
 			break;
 		default:  //set default case to max passthrough
-			settings.accelEnabled = 400;
+			settings.accelBandWidth = 400;
 		case 400:
 			dataToWrite |= LSM6DS3_ACC_GYRO_BW_XL_400Hz;
 			break;
