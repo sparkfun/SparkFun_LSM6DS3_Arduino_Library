@@ -77,8 +77,6 @@ status_t LSM6DS3Core::beginCore(void)
 		// Data is read and written MSb first.
 #ifdef ESP32
 		SPI.setBitOrder(SPI_MSBFIRST);
-#elif ESP8266
-		SPI.setBitOrder(SPI_MSBFIRST);
 #else
 		SPI.setBitOrder(MSBFIRST);
 #endif
