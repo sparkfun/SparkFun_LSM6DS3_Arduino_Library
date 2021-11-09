@@ -62,6 +62,7 @@ LSM6DS3Core::LSM6DS3Core( uint8_t busType, uint8_t inputArg) : commInterface(I2C
 status_t LSM6DS3Core::beginCore(void)
 {
 	status_t returnError = IMU_SUCCESS;
+  uint32_t spiPortSpeed = 5000000;
 
 	switch (commInterface) {
 
@@ -72,32 +73,20 @@ status_t LSM6DS3Core::beginCore(void)
 	case SPI_MODE:
 		// start the SPI library:
 		SPI.begin();
-		// Maximum SPI frequency is 10MHz, could divide by 2 here:
-		SPI.setClockDivider(SPI_CLOCK_DIV4);
-		// Data is read and written MSb first.
-#ifdef ESP32
-		SPI.setBitOrder(SPI_MSBFIRST);
-#elif ESP8266
-		SPI.setBitOrder(SPI_MSBFIRST);
-#else
-		SPI.setBitOrder(MSBFIRST);
+    
+#ifdef __AVR__ 
+    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE1);
 #endif
-		// Data is captured on rising edge of clock (CPHA = 0)
-		// Base value of the clock is HIGH (CPOL = 1)
-
-		// MODE3 for 328p operation
-#ifdef __AVR__
-		SPI.setDataMode(SPI_MODE3);
-#else
+#if defined(ESP32) || defined(ESP8266)
+    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE1);
 #endif
-
-		// MODE0 for Teensy 3.1 operation
 #ifdef __MK20DX256__
-		SPI.setDataMode(SPI_MODE0);
-#else
+    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE0);
 #endif
-		
-		// initalize the  data ready and chip select pins:
+#ifdef ARDUINO_NANO33BLE
+    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE0);
+#endif
+
 		pinMode(chipSelectPin, OUTPUT);
 		digitalWrite(chipSelectPin, HIGH);
 		break;
@@ -304,6 +293,7 @@ status_t LSM6DS3Core::writeRegister(uint8_t offset, uint8_t dataToWrite) {
 
 	case SPI_MODE:
 		// take the chip select low to select the device:
+    SPI.beginTransaction(mySpiSettings);
 		digitalWrite(chipSelectPin, LOW);
 		// send the device the register you want to read:
 		SPI.transfer(offset);
