@@ -370,7 +370,7 @@ LSM6DS3::LSM6DS3( uint8_t busType, uint8_t inputArg ) : LSM6DS3Core( busType, in
 	settings.commMode = 1;  //Can be modes 1, 2 or 3
 
 	//FIFO control data
-	settings.fifoThreshold = 3000;  //Can be 0 to 4096 (16 bit bytes)
+	settings.fifoThreshold = 3000;  //Can be 0 to 4095 (16 bit bytes)
 	settings.fifoSampleRate = 10;  //default 10Hz
 	settings.fifoModeWord = 0;  //Default off
 
