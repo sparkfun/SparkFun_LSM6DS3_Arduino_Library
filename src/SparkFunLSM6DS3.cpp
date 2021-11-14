@@ -19,7 +19,7 @@ ESPTool 2.6 for ESP32
 
 This code is released under the [MIT License](http://opensource.org/licenses/MIT).
 
-Please review the LICENSE.md file included with this example. If you have any questions 
+Please review the LICENSE.md file included with this example. If you have any questions
 or concerns with licensing, please contact techsupport@sparkfun.com.
 
 Distributed as-is; no warranty is given.
@@ -73,18 +73,18 @@ status_t LSM6DS3Core::beginCore(void)
 	case SPI_MODE:
 		// start the SPI library:
 		SPI.begin();
-    
-#ifdef __AVR__ 
-    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE1);
+
+#ifdef __AVR__
+    mySpiSettings = SPISettings(spiPortSpeed, MSBFIRST, SPI_MODE1);
 #endif
 #if defined(ESP32) || defined(ESP8266)
-    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE1);
+    mySpiSettings = SPISettings(spiPortSpeed, MSBFIRST, SPI_MODE1);
 #endif
 #ifdef __MK20DX256__
-    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE0);
+    mySpiSettings = SPISettings(spiPortSpeed, MSBFIRST, SPI_MODE0);
 #endif
 #ifdef ARDUINO_NANO33BLE
-    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE0);
+    mySpiSettings = SPISettings(spiPortSpeed, MSBFIRST, SPI_MODE0);
 #endif
 
 		pinMode(chipSelectPin, OUTPUT);
@@ -233,7 +233,7 @@ status_t LSM6DS3Core::readRegister(uint8_t* outputPointer, uint8_t offset) {
 		result = SPI.transfer(0x00);
 		// take the chip select high to de-select:
 		digitalWrite(chipSelectPin, HIGH);
-		
+
 		if( result == 0xFF )
 		{
 			//we've recieved all ones, report
@@ -263,7 +263,7 @@ status_t LSM6DS3Core::readRegisterInt16( int16_t* outputPointer, uint8_t offset 
 	uint8_t myBuffer[2];
 	status_t returnError = readRegisterRegion(myBuffer, offset, 2);  //Does memory transfer
 	int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
-	
+
 	*outputPointer = output;
 	return returnError;
 }
@@ -303,7 +303,7 @@ status_t LSM6DS3Core::writeRegister(uint8_t offset, uint8_t dataToWrite) {
 		// take the chip select high to de-select:
 		digitalWrite(chipSelectPin, HIGH);
 		break;
-		
+
 		//No way to check error on this write (Except to read back but that's not reliable)
 
 	default:
@@ -316,14 +316,14 @@ status_t LSM6DS3Core::writeRegister(uint8_t offset, uint8_t dataToWrite) {
 status_t LSM6DS3Core::embeddedPage( void )
 {
 	status_t returnError = writeRegister( LSM6DS3_ACC_GYRO_RAM_ACCESS, 0x80 );
-	
+
 	return returnError;
 }
 
 status_t LSM6DS3Core::basePage( void )
 {
 	status_t returnError = writeRegister( LSM6DS3_ACC_GYRO_RAM_ACCESS, 0x00 );
-	
+
 	return returnError;
 }
 
@@ -385,10 +385,10 @@ status_t LSM6DS3::begin(SensorSettings* pSettingsYouWanted)
 
 	//Begin the inherited core.  This gets the physical wires connected
 	status_t returnError = beginCore();
-	
+
 	// Copy the values from the user's settings into the output 'pSettingsYouWanted'
 	// compare settings with 'pSettingsYouWanted' after 'begin' to see if anything changed
-	if(pSettingsYouWanted != NULL){ 
+	if(pSettingsYouWanted != NULL){
 		pSettingsYouWanted->gyroEnabled = settings.gyroEnabled;
 		pSettingsYouWanted->gyroRange = settings.gyroRange;
 		pSettingsYouWanted->gyroSampleRate = settings.gyroSampleRate;
@@ -749,7 +749,7 @@ int16_t LSM6DS3::readRawTemp( void )
 	int16_t output;
 	readRegisterInt16( &output, LSM6DS3_ACC_GYRO_OUT_TEMP_L );
 	return output;
-}  
+}
 
 float LSM6DS3::readTempC( void )
 {
@@ -885,11 +885,10 @@ uint16_t LSM6DS3::fifoGetStatus( void ) {
 	readRegister(&tempReadByte, LSM6DS3_ACC_GYRO_FIFO_STATUS2);
 	tempAccumulator |= (tempReadByte << 8);
 
-	return tempAccumulator;  
+	return tempAccumulator;
 
 }
 void LSM6DS3::fifoEnd( void ) {
 	// turn off the fifo
 	writeRegister(LSM6DS3_ACC_GYRO_FIFO_CTRL5, 0x00);  //Disable
 }
-
