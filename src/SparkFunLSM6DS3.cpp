@@ -78,7 +78,7 @@ status_t LSM6DS3Core::beginCore(void)
     mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE1);
 #endif
 #if defined(ESP32) || defined(ESP8266)
-    mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE1);
+    mySpiSettings = SPISettings(spiPortSpeed, MSBFIRST, SPI_MODE1);
 #endif
 #ifdef __MK20DX256__
     mySpiSettings = SPISettings(spiPortSpeed, MSB_FIRST, SPI_MODE0);
