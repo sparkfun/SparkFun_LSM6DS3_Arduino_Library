@@ -45,7 +45,7 @@ Distributed as-is; no warranty is given.
 //  Default construction is I2C mode, address 0x6B.
 //
 //****************************************************************************//
-LSM6DS3Core::LSM6DS3Core( uint8_t busType, uint8_t inputArg) : commInterface(I2C_MODE), I2CAddress(0x6B), chipSelectPin(10)
+LSM6DS3Core::LSM6DS3Core( uint8_t busType, uint8_t inputArg ) : commInterface(I2C_MODE), I2CAddress(0x6B), chipSelectPin(10)
 {
 	commInterface = busType;
 	if( commInterface == I2C_MODE )
@@ -59,15 +59,18 @@ LSM6DS3Core::LSM6DS3Core( uint8_t busType, uint8_t inputArg) : commInterface(I2C
 
 }
 
-status_t LSM6DS3Core::beginCore(void)
+status_t LSM6DS3Core::beginCore( int8_t inputSDA, int8_t inputSCL )
 {
 	status_t returnError = IMU_SUCCESS;
-  uint32_t spiPortSpeed = 5000000;
+	uint32_t spiPortSpeed = 5000000;
 
 	switch (commInterface) {
 
 	case I2C_MODE:
-		Wire.begin();
+		if( inputSDA != -1 && inputSCL != -1 )
+			Wire.begin( inputSDA, inputSCL );
+		else
+			Wire.begin();
 		break;
 
 	case SPI_MODE:
@@ -378,13 +381,13 @@ LSM6DS3::LSM6DS3( uint8_t busType, uint8_t inputArg ) : LSM6DS3Core( busType, in
 //  "myIMU.settings.accelEnabled = 1;" to configure before calling .begin();
 //
 //****************************************************************************//
-status_t LSM6DS3::begin(SensorSettings* pSettingsYouWanted)
+status_t LSM6DS3::begin(SensorSettings* pSettingsYouWanted, int8_t inputSDA, int8_t inputSCL)
 {
 	//Check the settings structure values to determine how to setup the device
 	uint8_t dataToWrite = 0;  //Temporary variable
 
 	//Begin the inherited core.  This gets the physical wires connected
-	status_t returnError = beginCore();
+	status_t returnError = beginCore(inputSDA,inputSCL);
 	
 	// Copy the values from the user's settings into the output 'pSettingsYouWanted'
 	// compare settings with 'pSettingsYouWanted' after 'begin' to see if anything changed
