@@ -58,7 +58,7 @@ public:
 	LSM6DS3Core( uint8_t, uint8_t );
 	~LSM6DS3Core() = default;
 	
-	status_t beginCore( void );
+	status_t beginCore( int8_t, int8_t );
 	
 	//The following utilities read and write to the IMU
 
@@ -81,7 +81,7 @@ public:
 	
 	//Change to base page
 	status_t basePage( void );
-  SPISettings mySpiSettings;
+	SPISettings mySpiSettings;
 	
 private:
 	
@@ -146,11 +146,11 @@ public:
 
 	//Constructor generates default SensorSettings.
 	//(over-ride after construction if desired)
-	LSM6DS3( uint8_t busType = I2C_MODE, uint8_t inputArg = 0x6B );
+	LSM6DS3( uint8_t busType = I2C_MODE, uint8_t inputArg = 0x6B);
 	~LSM6DS3() = default;
 	
 	//Call to apply SensorSettings
-	status_t begin(SensorSettings* pSettingsYouWanted = NULL);
+	status_t begin(SensorSettings* pSettingsYouWanted = NULL, int8_t inputSDA = -1, int8_t inputSCL = -1);
 
 	//Returns the raw bits from the sensor cast as 16-bit signed integers
 	int16_t readRawAccelX( void );
